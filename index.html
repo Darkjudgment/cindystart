@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinthya · Un poquito de su mundo ✨</title>
+<meta name="description" content="Mini página dedicada a Cinthya: arte, flores, reggaeton, rancho, botas, zapatos gigantes y mucho amor a su suegra.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* respaldo local: si no hay internet, la página conserva su tipografía */
+@font-face{font-family:'FredokaLocal';src:url('fonts/Fredoka.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'TitanLocal';src:url('fonts/TitanOne-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'BowlbyLocal';src:url('fonts/BowlbyOne-Regular.ttf') format('truetype');font-display:swap}
+:root{
+  --azul:#2563ff;
+  --azul-osc:#1330b8;
+  --lavanda:#8b5cf6;
+  --lavanda-cl:#c4b5fd;
+  --rosa:#ff7ac6;
+  --amarillo:#ffd166;
+  --tinta:#1b1740;
+  --tinta-suave:#514a7a;
+  --papel:#fbf9ff;
+  --blanco:#ffffff;
+  --sombra:0 18px 40px rgba(38,25,110,.14);
+  --radio:28px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  color:var(--tinta);
+  background:
+    radial-gradient(1200px 700px at 10% -10%, #e8e3ff 0%, transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, #dbe7ff 0%, transparent 55%),
+    radial-gradient(1000px 800px at 50% 120%, #ffe9f6 0%, transparent 60%),
+    var(--papel);
+  overflow-x:hidden;
+  line-height:1.65;
+}
+h1,h2,h3,.display{font-family:'Baloo 2','FredokaLocal','TitanLocal',cursive;line-height:1.08}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--lavanda);color:#fff}
+
+/* ---------- barra de progreso ---------- */
+#progreso{position:fixed;top:0;left:0;height:4px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--azul),var(--lavanda),var(--rosa));}
+
+/* ---------- pétalos de fondo ---------- */
+#petalos{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+  background:rgba(255,255,255,.72);border-bottom:1px solid rgba(139,92,246,.16)}
+.nav-inner{max-width:1160px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:18px}
+.logo{font-family:'Baloo 2','FredokaLocal';font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:8px}
+.logo .bola{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1rem;
+  background:linear-gradient(135deg,var(--azul),var(--lavanda));box-shadow:0 6px 16px rgba(99,72,246,.4);
+  animation:latir 2.4s ease-in-out infinite}
+.nav-links{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.nav-links a{padding:8px 14px;border-radius:999px;font-weight:700;font-size:.92rem;color:var(--tinta-suave);
+  transition:.25s}
+.nav-links a:hover{background:linear-gradient(135deg,rgba(37,99,255,.14),rgba(139,92,246,.18));color:var(--azul-osc);transform:translateY(-2px)}
+
+/* ---------- botón música flotante ---------- */
+.player{position:fixed;right:20px;bottom:20px;z-index:110;display:flex;align-items:center;gap:10px;
+  padding:10px 16px 10px 10px;border:none;cursor:pointer;border-radius:999px;
+  background:linear-gradient(135deg,var(--azul-osc),var(--lavanda));color:#fff;font-family:'Baloo 2','FredokaLocal';font-weight:700;
+  font-size:.95rem;box-shadow:0 14px 30px rgba(46,32,140,.42);transition:.3s}
+.player:hover{transform:translateY(-4px) scale(1.03)}
+.player .disco{width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.15rem;
+  animation:girar 4s linear infinite;animation-play-state:paused}
+.player.on .disco{animation-play-state:running}
+.ecualizador{display:flex;align-items:flex-end;gap:3px;height:22px}
+.ecualizador i{width:4px;height:5px;background:var(--amarillo);border-radius:3px;display:block}
+.player.on .ecualizador i{animation:barra .9s ease-in-out infinite}
+.player.on .ecualizador i:nth-child(2){animation-delay:.15s}
+.player.on .ecualizador i:nth-child(3){animation-delay:.3s}
+.player.on .ecualizador i:nth-child(4){animation-delay:.45s}
+.pista{font-size:.78rem;opacity:.9;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+#estado-player{display:block}
+
+/* ---------- utilidades ---------- */
+.envoltorio{max-width:1160px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+.sello{display:inline-block;font-weight:700;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--lavanda);background:rgba(139,92,246,.12);padding:7px 16px;border-radius:999px}
+.seccion{padding:84px 0;position:relative;z-index:1}
+.titulo{font-size:clamp(2rem,5vw,3.1rem);font-weight:800;margin:16px 0 12px}
+.titulo .resaltado{background:linear-gradient(120deg,var(--azul),var(--lavanda) 60%,var(--rosa));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--tinta-suave);font-size:1.06rem;max-width:640px}
+.reveal{opacity:0;transform:translateY(38px);transition:opacity .8s cubic-bezier(.2,.8,.3,1),transform .8s cubic-bezier(.2,.8,.3,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal.d1{transition-delay:.12s}.reveal.d2{transition-delay:.24s}.reveal.d3{transition-delay:.36s}.reveal.d4{transition-delay:.48s}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:70px 0 60px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.ojo{font-weight:700;color:var(--azul);letter-spacing:.16em;text-transform:uppercase;font-size:.82rem}
+.hero h1{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:800;margin:12px 0 6px}
+.nombre{display:flex;flex-wrap:wrap;gap:2px}
+.nombre span{
+  display:inline-block;font-size:clamp(3rem,10vw,6.2rem);font-weight:800;
+  background:linear-gradient(160deg,var(--azul) 10%,var(--lavanda) 55%,var(--rosa));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:saltar .9s cubic-bezier(.2,.9,.3,1.4) both, flotar 3.6s ease-in-out infinite;
+  filter:drop-shadow(0 8px 16px rgba(99,72,246,.22))}
+.nombre span:nth-child(2n){animation-delay:.08s,.4s}
+.nombre span:nth-child(3n){animation-delay:.16s,.8s}
+.nombre span:nth-child(4n){animation-delay:.24s,1.2s}
+.nombre span:nth-child(5n){animation-delay:.32s,1.6s}
+.leyenda{font-size:1.15rem;color:var(--tinta-suave);max-width:520px;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0 26px}
+.chip{background:var(--blanco);border:1.5px solid rgba(139,92,246,.28);padding:7px 14px;border-radius:999px;
+  font-weight:700;font-size:.9rem;box-shadow:0 6px 14px rgba(38,25,110,.07);transition:.3s}
+.chip:hover{transform:translateY(-4px) rotate(-2deg);border-color:var(--lavanda);color:var(--azul-osc)}
+.acciones{display:flex;gap:14px;flex-wrap:wrap}
+.btn{border:none;cursor:pointer;font-family:'Baloo 2','FredokaLocal';font-weight:700;font-size:1rem;padding:15px 28px;border-radius:999px;
+  transition:.3s;display:inline-flex;align-items:center;gap:9px}
+.btn-primario{color:#fff;background:linear-gradient(135deg,var(--azul),var(--lavanda));
+  box-shadow:0 14px 30px rgba(59,42,200,.35)}
+.btn-primario:hover{transform:translateY(-4px);box-shadow:0 20px 38px rgba(59,44,200,.45)}
+.btn-secundario{background:#fff;color:var(--azul-osc);box-shadow:var(--sombra);border:1.5px solid rgba(37,99,255,.25)}
+.btn-secundario:hover{transform:translateY(-4px)}
+
+.hero-arte{position:relative;min-height:470px}
+.marco{position:absolute;border-radius:34px;overflow:hidden;box-shadow:var(--sombra);border:6px solid #fff}
+.marco img{height:100%;width:100%;object-fit:cover}
+.m-flores{width:74%;height:310px;top:0;right:0;animation:flotar 7s ease-in-out infinite}
+.m-botas{width:58%;height:240px;bottom:24px;left:0;animation:flotar 6s ease-in-out .8s infinite}
+.m-gigantes{width:50%;height:250px;bottom:-4px;right:-4px;animation:flotar 5.5s ease-in-out .4s infinite}
+.m-gigantes img{object-position:center 42%}
+.badge{position:absolute;z-index:3;background:#fff;border-radius:20px;padding:10px 16px;box-shadow:var(--sombra);
+  font-weight:700;font-family:'Baloo 2','FredokaLocal';font-size:.95rem;display:flex;align-items:center;gap:8px}
+.badge-1{bottom:-18px;left:4%;animation:balanceo 3.4s ease-in-out infinite}
+.badge-2{bottom:206px;right:-8px;animation:balanceo 3.8s ease-in-out .6s infinite}
+.badge-3{top:-16px;left:8%;animation:balanceo 4.2s ease-in-out 1.1s infinite}
+.bota-que-baila{display:inline-block;transform-origin:bottom center;animation:paso 1.1s ease-in-out infinite}
+
+/* ---------- marquee ---------- */
+.marquee{overflow:hidden;background:linear-gradient(90deg,var(--azul-osc),var(--lavanda),var(--rosa));
+  padding:16px 0;transform:rotate(-1.2deg);margin:10px 0 30px;box-shadow:0 12px 30px rgba(60,40,170,.28)}
+.marquee-pista{display:flex;width:max-content;animation:deslizar 26s linear infinite}
+.marquee span{font-family:'Baloo 2','FredokaLocal';font-weight:800;color:#fff;font-size:1.25rem;padding:0 26px;white-space:nowrap;
+  text-shadow:0 3px 10px rgba(0,0,0,.18)}
+
+/* ---------- tarjetas de datos ---------- */
+.rejilla{display:grid;gap:22px}
+.datos{grid-template-columns:repeat(3,1fr);margin-top:38px}
+.tarjeta{background:var(--blanco);border-radius:var(--radio);padding:26px;box-shadow:var(--sombra);
+  border:1px solid rgba(139,92,246,.12);transition:.35s;position:relative;overflow:hidden}
+.tarjeta::after{content:"";position:absolute;inset:auto -40px -60px auto;width:130px;height:130px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(37,99,255,.1),rgba(139,92,246,.16));transition:.5s}
+.tarjeta:hover{transform:translateY(-8px);box-shadow:0 26px 50px rgba(38,25,110,.2)}
+.tarjeta:hover::after{transform:scale(1.7)}
+.tarjeta .ico{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-size:1.6rem;margin-bottom:14px;
+  background:linear-gradient(135deg,rgba(37,99,255,.16),rgba(139,92,246,.22))}
+.tarjeta h3{font-size:1.3rem;margin-bottom:6px}
+.tarjeta p{color:var(--tinta-suave);font-size:.98rem;position:relative;z-index:1}
+.pista-dato{display:block;margin-top:14px;font-weight:700;font-size:.82rem;color:var(--lavanda);letter-spacing:.1em;
+  text-transform:uppercase}
+
+/* ---------- bio ---------- */
+.bio{display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:center;margin-top:34px}
+.foto-perfil{position:relative;justify-self:center}
+.foto-circulo{width:280px;height:280px;border-radius:50%;overflow:hidden;border:8px solid #fff;box-shadow:var(--sombra);
+  background:linear-gradient(135deg,var(--azul),var(--lavanda));display:grid;place-items:center;position:relative}
+.foto-circulo img{width:100%;height:100%;object-fit:cover}
+.foto-circulo .iniciales{font-family:'Baloo 2','FredokaLocal';font-size:5rem;color:#fff;font-weight:800}
+.halo{position:absolute;inset:-22px;border-radius:50%;border:3px dashed rgba(139,92,246,.45);animation:girar 26s linear infinite}
+.florecita{position:absolute;font-size:1.7rem;animation:flotar 4s ease-in-out infinite}
+.ff1{top:-6px;right:6px}.ff2{bottom:8px;left:-4px;animation-delay:.7s}.ff3{top:44%;right:-24px;animation-delay:1.3s}
+.bio p{margin-bottom:14px;color:var(--tinta-suave);font-size:1.05rem}
+.bio strong{color:var(--azul-osc)}
+
+/* ---------- pasiones ---------- */
+.pasiones{grid-template-columns:1fr 1fr;margin-top:38px}
+.pasion{border-radius:var(--radio);overflow:hidden;background:#fff;box-shadow:var(--sombra);position:relative;
+  transition:.4s;display:flex;flex-direction:column}
+.pasion:hover{transform:translateY(-10px) rotate(-.6deg)}
+.pasion .lienzo{height:250px;overflow:hidden;position:relative}
+.pasion .lienzo img{height:100%;width:100%;object-fit:cover;transition:1.1s cubic-bezier(.2,.8,.3,1)}
+.pasion:hover .lienzo img{transform:scale(1.11) rotate(1.2deg)}
+.pasion .etiqueta{position:absolute;top:16px;left:16px;background:rgba(255,255,255,.94);padding:7px 15px;border-radius:999px;
+  font-family:'Baloo 2','FredokaLocal';font-weight:700;font-size:.9rem;box-shadow:0 8px 18px rgba(0,0,0,.16)}
+.pasion .cuerpo{padding:26px}
+.pasion h3{font-size:1.6rem;margin-bottom:8px}
+.pasion p{color:var(--tinta-suave)}
+
+/* ---------- divertido ---------- */
+.divertido{grid-template-columns:repeat(4,1fr);margin-top:38px}
+.mini{background:#fff;border-radius:26px;overflow:hidden;box-shadow:var(--sombra);transition:.35s;
+  display:flex;flex-direction:column;border:1px solid rgba(139,92,246,.12)}
+.mini:hover{transform:translateY(-10px) scale(1.02)}
+.mini .foto{height:170px;overflow:hidden}
+.mini .foto img{height:100%;width:100%;object-fit:cover;transition:1s}
+.mini:hover .foto img{transform:scale(1.12) translateY(-4px)}
+.mini .txt{padding:20px;flex:1}
+.mini h3{font-size:1.2rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.mini p{font-size:.93rem;color:var(--tinta-suave)}
+
+/* ---------- suegra ---------- */
+.suegra{background:linear-gradient(135deg,rgba(37,99,255,.09),rgba(139,92,246,.14) 55%,rgba(255,122,198,.16));
+  border-radius:44px;padding:56px 44px;text-align:center;position:relative;overflow:hidden;margin-top:36px;
+  border:2px dashed rgba(139,92,246,.4)}
+.suegra .tapa{cursor:pointer;position:relative;z-index:2}
+.corazon{width:130px;height:130px;margin:8px auto 18px;display:grid;place-items:center;position:relative}
+.corazon .latido{font-size:4.6rem;animation:latir 1.1s ease-in-out infinite;filter:drop-shadow(0 10px 20px rgba(255,60,130,.45))}
+.corazon .anillo{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,122,198,.55);
+  animation:onda 1.8s ease-out infinite}
+.corazon .anillo:nth-child(2){animation-delay:.6s}
+.suegra h2{font-size:clamp(1.8rem,4.4vw,2.7rem);margin-bottom:8px}
+.suegra .pista-toca{font-weight:700;color:var(--lavanda);letter-spacing:.12em;text-transform:uppercase;font-size:.84rem}
+.mensaje{max-height:0;opacity:0;overflow:hidden;transition:max-height .9s ease,opacity .7s ease .2s;position:relative;z-index:2}
+.mensaje.abierto{max-height:760px;opacity:1;margin-top:48px}
+.mensaje .carta{background:#fff;border-radius:30px;padding:34px 30px;box-shadow:var(--sombra);max-width:720px;margin:0 auto;
+  text-align:left;font-size:1.08rem;color:var(--tinta-suave);position:relative}
+.mensaje .carta::before{content:"💜";position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  background:#fff;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.4rem;
+  box-shadow:var(--sombra)}
+.mensaje .carta p{margin-bottom:12px}
+.mensaje .firma{font-family:'Baloo 2','FredokaLocal';color:var(--azul-osc);font-size:1.15rem;text-align:right;margin-top:6px}
+.suegra .foto-suegra{width:min(340px,80%);margin:26px auto 0;border-radius:26px;overflow:hidden;box-shadow:var(--sombra);
+  transform:rotate(-1.5deg)}
+.corazoncito{position:absolute;font-size:1.5rem;pointer-events:none;animation:subir 2.4s ease-out forwards;z-index:5}
+
+/* ---------- datos rápidos / lista ---------- */
+.lista{list-style:none;margin-top:26px;display:grid;gap:14px}
+.lista li{background:#fff;border-radius:20px;padding:16px 20px;box-shadow:0 10px 24px rgba(38,25,110,.09);
+  display:flex;gap:14px;align-items:center;font-weight:600;transition:.3s;border:1px solid rgba(139,92,246,.1)}
+.lista li:hover{transform:translateX(10px);border-color:var(--lavanda)}
+.lista li b{font-family:'Baloo 2','FredokaLocal';color:var(--azul-osc);font-size:1.05rem}
+.lista li .em{font-size:1.5rem}
+
+/* ---------- footer ---------- */
+footer{background:linear-gradient(135deg,var(--azul-osc),#3b2bb5 55%,var(--lavanda));color:#fff;
+  padding:56px 0 40px;margin-top:70px;position:relative;z-index:1;overflow:hidden}
+footer .envoltorio{text-align:center}
+footer h3{font-size:2rem;margin-bottom:8px}
+footer p{opacity:.9}
+.credito{margin-top:22px;font-size:.85rem;opacity:.75;line-height:1.8}
+.paso-final{margin-top:18px;font-family:'Baloo 2','FredokaLocal';font-size:1.1rem;opacity:.95}
+
+/* ---------- animaciones ---------- */
+@keyframes saltar{0%{opacity:0;transform:translateY(60px) scale(.6) rotate(-8deg)}60%{opacity:1;transform:translateY(-12px) scale(1.06) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes balanceo{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+@keyframes latir{0%,100%{transform:scale(1)}30%{transform:scale(1.12)}60%{transform:scale(.98)}}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes paso{0%,100%{transform:rotate(-11deg)}50%{transform:rotate(11deg)}}
+@keyframes deslizar{to{transform:translateX(-50%)}}
+@keyframes barra{0%,100%{height:5px}50%{height:20px}}
+@keyframes onda{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+@keyframes subir{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-260px) scale(.4)}}
+@keyframes caer{0%{transform:translateY(-10vh) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(110vh) rotate(420deg);opacity:.7}}
+
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:34px}
+  .hero-arte{min-height:360px;order:-1}
+  .bio{grid-template-columns:1fr}
+  .datos,.pasiones{grid-template-columns:1fr 1fr}
+  .divertido{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .datos,.pasiones,.divertido{grid-template-columns:1fr}
+  .seccion{padding:60px 0}
+  .suegra{padding:40px 22px;border-radius:32px}
+  .player .pista{display:none}
+  .foto-circulo{width:220px;height:220px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div id="progreso"></div>
+<canvas id="petalos"></canvas>
+
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="bola">C</span> Cinthya</div>
+    <nav class="nav-links">
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#pasiones">Mis pasiones</a>
+      <a href="#lo-que-me-gusta">Mis cosas raras</a>
+      <a href="#suegra">Mi suegra 💜</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="envoltorio hero-grid">
+    <div class="hero-texto">
+      <span class="ojo">Bienvenidos a mi mundito ✨</span>
+      <h1>¡Hola! soy</h1>
+      <div class="nombre" id="nombre">
+        <span>C</span><span>I</span><span>N</span><span>T</span><span>H</span><span>Y</span><span>A</span>
+      </div>
+      <p class="leyenda">
+        Un poco arte, un poco dembow, un campo de flores y un par de botas muy grandes.
+        Esta es mi mini página: <strong>alegre, ruidosa y hecha con mucho cariño</strong>.
+      </p>
+      <div class="chips">
+        <span class="chip">🎨 Arte y creatividad</span>
+        <span class="chip">🌸 Flores y naturaleza</span>
+        <span class="chip">🔊 Reggaetón</span>
+        <span class="chip">🤠 Cosas de rancho</span>
+        <span class="chip">👢 Botas</span>
+        <span class="chip">👟 Zapatos gigantes</span>
+        <span class="chip">💜 Amo a mi suegra</span>
+      </div>
+      <div class="acciones">
+        <a class="btn btn-primario" href="#sobre-mi">Conóceme un poquito ↓</a>
+        <button class="btn btn-secundario" id="btn-musica-hero">🔊 Pon el reggaetón</button>
+      </div>
+    </div>
+
+    <div class="hero-arte" id="hero-arte">
+      <div class="badge badge-1"><span class="bota-que-baila">👢</span> Botas siempre</div>
+      <div class="badge badge-2">👟 Tamaño gigante</div>
+      <div class="badge badge-3">🌴 Modo rancho</div>
+      <div class="marco m-flores parallax" data-fuerza="14">
+        <img src="img/flores-campo.jpg" alt="Campo de flores moradas y amarillas">
+      </div>
+      <div class="marco m-botas parallax" data-fuerza="24">
+        <img src="img/botas.jpg" alt="Pared llena de botas de vaquero de colores">
+      </div>
+      <div class="marco m-gigantes parallax" data-fuerza="34">
+        <img src="img/zapatos-gigantes.jpg" alt="Escultura gigante de botas de vaquero azules">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MARQUEE ================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-pista">
+    <span>REGGAETÓN 💜</span><span>BOTAS 👢</span><span>RANCHO 🤠</span><span>FLORES 🌸</span><span>ARTE 🎨</span><span>ZAPATOS GIGANTES 👟</span><span>DEMBOW 🔊</span><span>AMO A MI SUEGRA 💜</span>
+    <span>REGGAETÓN 💜</span><span>BOTAS 👢</span><span>RANCHO 🤠</span><span>FLORES 🌸</span><span>ARTE 🎨</span><span>ZAPATOS GIGANTES 👟</span><span>DEMBOW 🔊</span><span>AMO A MI SUEGRA 💜</span>
+  </div>
+</div>
+
+<!-- ================= SOBRE MÍ ================= -->
+<section class="seccion" id="sobre-mi">
+  <div class="envoltorio">
+    <span class="sello reveal">Mini biografía</span>
+    <h2 class="titulo reveal d1">Un poquito <span class="resaltado">sobre mí</span></h2>
+    <p class="sub reveal d2">La versión corta: si hay música, flores o algo creativo por hacer, ahí estoy. Y si además hay botas, mejor.</p>
+
+    <div class="bio">
+      <div class="foto-perfil reveal d1">
+        <div class="halo"></div>
+        <div class="foto-circulo">
+          <!-- Si dejas tu foto en img/cinthya.jpg aparece aquí automáticamente -->
+          <img src="img/cinthya.jpg" alt="" id="foto-cinthya"
+               onerror="this.style.display='none';document.getElementById('iniciales').style.display='block';">
+          <span class="iniciales" id="iniciales" style="display:none">C</span>
+        </div>
+        <span class="florecita ff1">🌸</span>
+        <span class="florecita ff2">💜</span>
+        <span class="florecita ff3">👢</span>
+      </div>
+
+      <div class="reveal d2">
+        <p>
+          Soy <strong>Cinthya</strong>: una persona <strong>alegre y divertida</strong>, de esas que llegan y el ambiente
+          sube de volumen. Me gusta reír mucho, contar cosas exageradas y sacarle provecho a cualquier día normal.
+        </p>
+        <p>
+          Del lado creativo soy <strong>media artista</strong>: me encanta <strong>crear cosas con las manos</strong>,
+          pintar, armar, decorar y ver cómo una idea se vuelve algo real. Para mí el color nunca está de más,
+          y por eso <strong>azul y lavanda</strong> son los tonos que van con todo.
+        </p>
+        <p>
+          Cuando no estoy creando, me encuentras en plan naturaleza —<strong>flores, campos y cosas bonitas</strong>—
+          o bailando lo que suene, porque el <strong>reggaetón</strong> es licencia oficial para dejar de pensar.
+        </p>
+        <p>
+          Y sí, también tengo mis cosas raras: <strong>cosas de rancho</strong>, <strong>botas</strong> y
+          <strong>zapatos gigantes</strong> me parecen lo máximo. Detrás de todo, lo más importante:
+          <strong>amo a mi suegra</strong> 💜.
+        </p>
+      </div>
+    </div>
+
+    <div class="rejilla datos">
+      <div class="tarjeta reveal">
+        <div class="ico">🎨</div>
+        <h3>Mano maestra</h3>
+        <p>Pinceles, colores y proyectos a medio terminar que siempre terminan lindísimos.</p>
+        <span class="pista-dato">Arte y creatividad</span>
+      </div>
+      <div class="tarjeta reveal d1">
+        <div class="ico">🌸</div>
+        <h3>Amor por las flores</h3>
+        <p>Si hay flores de por medio, el día ya ganó. Naturaleza y color en cada esquina.</p>
+        <span class="pista-dato">Flores y naturaleza</span>
+      </div>
+      <div class="tarjeta reveal d2">
+        <div class="ico">🔊</div>
+        <h3>Banda sonora</h3>
+        <p>Reggaetón a buen volumen. Si entra el dembow, el baile empieza solo.</p>
+        <span class="pista-dato">Modo fiesta</span>
+      </div>
+      <div class="tarjeta reveal">
+        <div class="ico">🤠</div>
+        <h3>Alma de rancho</h3>
+        <p>Vallas, caballos, atardeceres y ese aire de campo que no se compra.</p>
+        <span class="pista-dato">Cosas de rancho</span>
+      </div>
+      <div class="tarjeta reveal d1">
+        <div class="ico">👟</div>
+        <h3>Zapatos gigantes</h3>
+        <p>Mientras más grandes, mejor. Un zapato enorme siempre es buena idea.</p>
+        <span class="pista-dato">Gusto peculiar</span>
+      </div>
+      <div class="tarjeta reveal d2">
+        <div class="ico">💜</div>
+        <h3>Amo a mi suegra</h3>
+        <p>Sin rodeos ni excusas: mi suegra es lo máximo y lo digo con orgullo.</p>
+        <span class="pista-dato">Amor puro</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PASIONES ================= -->
+<section class="seccion" id="pasiones" style="background:linear-gradient(180deg,transparent,rgba(139,92,246,.07),transparent)">
+  <div class="envoltorio">
+    <span class="sello reveal">Lo que me apasiona</span>
+    <h2 class="titulo reveal d1">Mis dos <span class="resaltado">grandes amores</span> visuales</h2>
+    <p class="sub reveal d2">Arte y naturaleza: la combinación que nunca falla.</p>
+
+    <div class="rejilla pasiones">
+      <article class="pasion reveal">
+        <div class="lienzo">
+          <span class="etiqueta">🎨 Arte</span>
+          <img src="img/arte-pinceles.jpg" alt="Pinceles de pintura listos para crear">
+        </div>
+        <div class="cuerpo">
+          <h3>Arte y creatividad</h3>
+          <p>
+            Mi cabeza nunca se queda quieta: siempre hay una idea, un boceto o algo por decorar.
+            Crear es mi forma de descansar y de decir lo que siento sin tener que explicarlo.
+          </p>
+        </div>
+      </article>
+
+      <article class="pasion reveal d1">
+        <div class="lienzo">
+          <span class="etiqueta">🌸 Naturaleza</span>
+          <img src="img/flores-campo.jpg" alt="Campo lleno de flores moradas">
+        </div>
+        <div class="cuerpo">
+          <h3>Flores y naturaleza</h3>
+          <p>
+            Un campo de flores, el aire libre y los colores de la naturaleza me recuerdan
+            que las cosas bonitas no tienen que complicarse: con mirarlas alcanza.
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <div class="rejilla pasiones" style="grid-template-columns:1fr 1fr;margin-top:22px">
+      <article class="pasion reveal d2">
+        <div class="lienzo" style="height:200px">
+          <span class="etiqueta">🖼️ Crear con las manos</span>
+          <img src="img/pintura-amor.jpg" alt="Pincel pintando un corazón de color rojo">
+        </div>
+        <div class="cuerpo">
+          <h3>Todo lo hago con cariño</h3>
+          <p>Cada cosa que hago lleva un poquito de corazón. Literal: hasta mi forma de pintar termina en corazones.</p>
+        </div>
+      </article>
+      <article class="pasion reveal d3">
+        <div class="lienzo" style="height:200px">
+          <span class="etiqueta">🤠 Campo abierto</span>
+          <img src="img/rancho-alberta.jpg" alt="Campo de rancho con vacas y valla al atardecer">
+        </div>
+        <div class="cuerpo">
+          <h3>Un poco de rancho</h3>
+          <p>Atardeceres, vallas, caballos y silencio bonito: mi lado campo favorito para recargar energías.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LO QUE ME GUSTA (DIVERTIDO) ================= -->
+<section class="seccion" id="lo-que-me-gusta">
+  <div class="envoltorio">
+    <span class="sello reveal">Detalles divertidos</span>
+    <h2 class="titulo reveal d1">Cosas que me hacen <span class="resaltado">sonreír</span> 😄</h2>
+    <p class="sub reveal d2">Mi lista oficial de cosas que siempre funcionan para sacarme de buen humor.</p>
+
+    <div class="rejilla divertido">
+      <article class="mini reveal">
+        <div class="foto"><img src="img/reggaeton-foto.jpg" alt="Gente bailando en una fiesta"></div>
+        <div class="txt">
+          <h3>🔊 Reggaetón</h3>
+          <p>En cuanto suena el dembow, yo ya estoy bailando. El volumen va alto y las excusas, a otro lado.</p>
+        </div>
+      </article>
+
+      <article class="mini reveal d1">
+        <div class="foto"><img src="img/rancho-caballos.jpg" alt="Caballo de rancho en blanco y negro"></div>
+        <div class="txt">
+          <h3>🤠 Rancho</h3>
+          <p>Caballos, campo abierto y horizonte infinito. El plan perfecto para respirar hondo.</p>
+        </div>
+      </article>
+
+      <article class="mini reveal d2">
+        <div class="foto"><img src="img/zapatos-gigantes.jpg" alt="Escultura gigante de botas de vaquero"></div>
+        <div class="txt">
+          <h3>👟 Zapatos gigantes</h3>
+          <p>Un zapato enorme me parece lo más divertido del mundo. Si es azul, todavía mejor.</p>
+        </div>
+      </article>
+
+      <article class="mini reveal d3">
+        <div class="foto"><img src="img/botas-vintage.jpg" alt="Botas de vaquero vintage sobre un mapa"></div>
+        <div class="txt">
+          <h3>👢 Botas</h3>
+          <p>Botas para el campo, botas para la ciudad, botas para bailar. Siempre hay un par esperando.</p>
+        </div>
+      </article>
+    </div>
+
+    <ul class="lista reveal d1">
+      <li><span class="em">🎵</span><span><b>Playlist:</b> reggaetón, dembow y un poco de todo lo que se pueda mover.</span></li>
+      <li><span class="em">🤠</span><span><b>Look rancho:</b> sombrero, botas y actitud para todo.</span></li>
+      <li><span class="em">👟</span><span><b>Regla de calzado:</b> si no es gigante, ¿para qué lo quiero?</span></li>
+      <li><span class="em">🌸</span><span><b>Debilidad:</b> flores bonitas y paisajes que parecen pintura.</span></li>
+      <li><span class="em">💜</span><span><b>Confesión:</b> amo a mi suegra y no me canso de decirlo.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SUEGRA ================= -->
+<section class="seccion" id="suegra">
+  <div class="envoltorio">
+    <div class="suegra reveal">
+      <div class="tapa" id="tapa-suegra" role="button" tabindex="0" aria-expanded="false">
+        <div class="corazon">
+          <span class="anillo"></span><span class="anillo"></span>
+          <span class="latido">💖</span>
+        </div>
+        <h2>Amo a mi suegra 💜</h2>
+        <p class="pista-toca">Toca el corazón para leer el mensaje ↓</p>
+      </div>
+
+      <div class="mensaje" id="mensaje-suegra">
+        <div class="carta">
+          <p>
+            <strong>Quiero que se note:</strong> amo a mi suegra. La quiero con el corazón, sin maquillaje
+            y sin pose. Es de esas personas que llegan y todo se pone más fácil, más risa y más tranquilo.
+          </p>
+          <p>
+            Gracias por el cariño de siempre, por tratarme como uno más de la familia y por esos consejos
+            que llegan justo cuando los necesito. Cualquier día es bueno para decirlo, así que hoy lo digo
+            bien grande: <strong>mi suegra es la mejor y estoy muy agradecida de tenerla</strong>.
+          </p>
+          <p>
+            Que nos falten muchas sobremesas, muchas risas y muchos años para seguir siendo
+            <strong>una familia de las buenas</strong>. 💜
+          </p>
+          <p class="firma">— Con todo mi amor, Cinthya 💜</p>
+        </div>
+        <div class="foto-suegra">
+          <img src="img/pintura-amor.jpg" alt="Corazón pintado con pincel">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="envoltorio">
+    <h3>¡Gracias por pasar! ✨</h3>
+    <p>Esta es mi pequeña esquina en internet: alegre, colorida y con dembow de fondo.</p>
+    <p class="paso-final">Recuerda: flores, botas, reggaetón y mucho amor a la suegra 💜🤠🔊</p>
+    <p class="credito">
+      Hecho con 💙 para Cinthya ·
+      Fotos: comunidad de Flickr vía Openverse (licencias libres) ·
+      Música: pistas de reggaetón/dembow vía Internet Archive (CC)
+    </p>
+  </div>
+</footer>
+
+<!-- ================= REPRODUCTOR ================= -->
+<button class="player" id="player" aria-label="Reproducir o pausar música">
+  <span class="disco">💿</span>
+  <span>
+    <span id="estado-player">Poner reggaetón</span>
+    <span class="pista" id="nombre-pista">Reggaetón · Los Intokables</span>
+  </span>
+  <span class="ecualizador"><i></i><i></i><i></i><i></i></span>
+</button>
+<audio id="audio" preload="none"></audio>
+
+<script>
+/* ============ pista de música ============ */
+const pistas = [
+  {src:'audio/reggaeton.mp3', nombre:'Reggaetón · Los Intokables'},
+  {src:'audio/dembow.mp3',    nombre:'Dembow · Voy a Controlar'}
+];
+const audio  = document.getElementById('audio');
+const player = document.getElementById('player');
+const estado = document.getElementById('estado-player');
+const nomPt  = document.getElementById('nombre-pista');
+let indice = 0, sonando = false;
+
+function cargarPista(){ audio.src = pistas[indice].src; nomPt.textContent = pistas[indice].nombre; }
+function alternarMusica(){
+  if(!audio.src) cargarPista();
+  if(sonando){ audio.pause(); } else { audio.play().catch(()=>{}); }
+}
+audio.addEventListener('play',  ()=>{ sonando=true;  player.classList.add('on'); estado.textContent='Sonando...'; });
+audio.addEventListener('pause', ()=>{ sonando=false; player.classList.remove('on'); estado.textContent='Poner reggaetón'; });
+audio.addEventListener('ended', ()=>{ indice=(indice+1)%pistas.length; cargarPista(); audio.play().catch(()=>{}); });
+player.addEventListener('click', alternarMusica);
+document.getElementById('btn-musica-hero').addEventListener('click', alternarMusica);
+
+/* ============ barra de progreso ============ */
+const barra = document.getElementById('progreso');
+addEventListener('scroll', ()=>{
+  const h = document.documentElement.scrollHeight - innerHeight;
+  barra.style.width = (h>0 ? (scrollY/h)*100 : 0) + '%';
+});
+
+/* ============ revelar al hacer scroll ============ */
+const io = new IntersectionObserver((entradas)=>{
+  entradas.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target);} });
+},{threshold:.14, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============ parallax del hero con el ratón ============ */
+const capa = document.getElementById('hero-arte');
+if(capa && matchMedia('(pointer:fine)').matches){
+  capa.addEventListener('mousemove', e=>{
+    const r = capa.getBoundingClientRect();
+    const x = (e.clientX - r.left)/r.width - .5;
+    const y = (e.clientY - r.top)/r.height - .5;
+    capa.querySelectorAll('.parallax').forEach(el=>{
+      const f = parseFloat(el.dataset.fuerza||10);
+      el.style.translate = (-x*f)+'px '+(-y*f)+'px';
+    });
+  });
+  capa.addEventListener('mouseleave', ()=>{
+    capa.querySelectorAll('.parallax').forEach(el=> el.style.translate = '0 0');
+  });
+}
+
+/* ============ foto de perfil con respaldo ============ */
+const foto = document.getElementById('foto-cinthya');
+function mostrarIniciales(){
+  foto.style.display='none';
+  document.getElementById('iniciales').style.display='block';
+}
+foto.addEventListener('error', mostrarIniciales);
+if(foto.complete && foto.naturalWidth === 0) mostrarIniciales(); // si el error ocurrió antes de leer este script
+
+/* ============ mensaje de la suegra + corazones ============ */
+const tapa = document.getElementById('tapa-suegra');
+const mensaje = document.getElementById('mensaje-suegra');
+const pistaToca = tapa.querySelector('.pista-toca');
+function abrirMensaje(){
+  const abierto = mensaje.classList.toggle('abierto');
+  tapa.setAttribute('aria-expanded', abierto);
+  pistaToca.textContent = abierto ? 'Cierra el mensaje ↑' : 'Toca el corazón para leer el mensaje ↓';
+  if(abierto) soltarCorazones();
+}
+tapa.addEventListener('click', abrirMensaje);
+tapa.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); abrirMensaje(); }});
+
+function soltarCorazones(){
+  const caja = document.querySelector('.suegra');
+  const emojis = ['💜','💖','🌸','👟','👢','🤠'];
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.className='corazoncito';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = (8 + Math.random()*84)+'%';
+    s.style.bottom = '10px';
+    s.style.animationDelay = (Math.random()*.7)+'s';
+    s.style.animationDuration = (1.8+Math.random()*1.4)+'s';
+    caja.appendChild(s);
+    setTimeout(()=>s.remove(), 3600);
+  }
+}
+
+/* ============ pétalos cayendo (canvas) ============ */
+const cv = document.getElementById('petalos'), ctx = cv.getContext('2d');
+const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ancho, alto, particulas = [];
+const colores = ['#8b5cf6','#2563ff','#c4b5fd','#ff7ac6','#ffd166'];
+
+function medir(){
+  ancho = cv.width = innerWidth;
+  alto  = cv.height = innerHeight;
+}
+function crear(n){
+  particulas = [];
+  for(let i=0;i<n;i++){
+    particulas.push({
+      x: Math.random()*ancho,
+      y: Math.random()*alto,
+      r: 5 + Math.random()*9,
+      vy: .25 + Math.random()*.75,
+      vx: -.35 + Math.random()*.7,
+      giro: Math.random()*Math.PI,
+      vgiro: -.02 + Math.random()*.04,
+      c: colores[Math.floor(Math.random()*colores.length)],
+      a: .28 + Math.random()*.35,
+      corazon: Math.random() < .18
+    });
+  }
+}
+function petalo(p){
+  ctx.save();
+  ctx.translate(p.x,p.y); ctx.rotate(p.giro);
+  ctx.globalAlpha = p.a; ctx.fillStyle = p.c;
+  if(p.corazon){
+    ctx.font = (p.r*2.4)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('💜',0,0);
+  }else{
+    ctx.beginPath();
+    ctx.ellipse(0,0,p.r,p.r*.55,0,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+function animar(){
+  ctx.clearRect(0,0,ancho,alto);
+  particulas.forEach(p=>{
+    p.y += p.vy; p.x += p.vx + Math.sin(p.y/70)*.35; p.giro += p.vgiro;
+    if(p.y - 20 > alto){ p.y = -30; p.x = Math.random()*ancho; }
+    if(p.x < -40) p.x = ancho+30;
+    if(p.x > ancho+40) p.x = -30;
+    petalo(p);
+  });
+  requestAnimationFrame(animar);
+}
+medir();
+crear(innerWidth < 700 ? 16 : 30);
+if(!reducido){ animar(); } else { particulas.forEach(p=>petalo(p)); }
+addEventListener('resize', ()=>{ medir(); crear(innerWidth < 700 ? 16 : 30); if(reducido) particulas.forEach(p=>petalo(p)); });
+</script>
+</body>
+</html>
